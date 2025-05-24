@@ -28,16 +28,15 @@ export const createLogEntry = async (userId, logData) => {
 };
 
 /**
- * Get all log entries for a specific user
- * @param {string} userId - The user's ID
+ * Get all log entries that the current user is authorized to see (own logs + friends' logs)
+ * RLS policies handle the filtering automatically
  * @returns {Promise} Supabase response with log entries
  */
-export const getLogEntries = async (userId) => {
+export const getLogEntries = async () => {
   try {
     const { data, error } = await supabase
       .from('logs')
       .select('*')
-      .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
     if (error) throw error;

@@ -30,7 +30,7 @@ const LogListScreen = ({ navigation }) => {
       setError(null);
       
       console.log('Fetching logs for user:', user.id);
-      const { data, error } = await getLogEntries(user.id);
+      const { data, error } = await getLogEntries();
       
       if (error) {
         throw error;
