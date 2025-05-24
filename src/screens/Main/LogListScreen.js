@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
 import { getLogEntries } from '../../api/logs';
 
@@ -17,36 +18,45 @@ const LogListScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const fetchLogs = async () => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      
+      console.log('Fetching logs for user:', user.id);
+      const { data, error } = await getLogEntries(user.id);
+      
+      if (error) {
+        throw error;
+      }
+      
+      console.log('Fetched logs:', data);
+      setLogs(data || []);
+    } catch (err) {
+      console.error('Error fetching logs:', err);
+      setError(err.message || 'Failed to fetch logs');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchLogs = async () => {
-      if (!user) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        setError(null);
-        
-        console.log('Fetching logs for user:', user.id);
-        const { data, error } = await getLogEntries(user.id);
-        
-        if (error) {
-          throw error;
-        }
-        
-        console.log('Fetched logs:', data);
-        setLogs(data || []);
-      } catch (err) {
-        console.error('Error fetching logs:', err);
-        setError(err.message || 'Failed to fetch logs');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchLogs();
   }, [user]);
+
+  // Refresh logs when screen comes into focus (e.g., returning from create screen)
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user) {
+        fetchLogs();
+      }
+    }, [user])
+  );
 
   const renderLogItem = ({ item }) => (
     <View style={styles.logItem}>
