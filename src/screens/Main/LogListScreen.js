@@ -11,6 +11,7 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
 import { getLogEntries } from '../../api/logs';
+import supabase from '../../api/supabase';
 
 const LogListScreen = ({ navigation }) => {
   const { user } = useAuth();
@@ -47,6 +48,37 @@ const LogListScreen = ({ navigation }) => {
 
   useEffect(() => {
     fetchLogs();
+
+    // Set up realtime subscription for INSERT events
+    if (user) {
+      console.log('Setting up realtime subscription for user:', user.id);
+      
+      const subscription = supabase
+        .channel('logs_inserts')
+        .on('postgres_changes', 
+          { 
+            event: 'INSERT', 
+            schema: 'public', 
+            table: 'logs',
+            filter: `user_id=eq.${user.id}`
+          }, 
+          (payload) => {
+            console.log('Realtime INSERT event received:', payload);
+            
+            // Add the new log entry to the current logs state
+            if (payload.new) {
+              setLogs(currentLogs => [payload.new, ...currentLogs]);
+            }
+          }
+        )
+        .subscribe();
+
+      // Cleanup subscription on unmount
+      return () => {
+        console.log('Cleaning up realtime subscription');
+        subscription.unsubscribe();
+      };
+    }
   }, [user]);
 
   // Refresh logs when screen comes into focus (e.g., returning from create screen)
