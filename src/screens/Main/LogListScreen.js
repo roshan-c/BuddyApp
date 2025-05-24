@@ -6,11 +6,12 @@ import {
   StyleSheet,
   SafeAreaView,
   ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { getLogEntries } from '../../api/logs';
 
-const LogListScreen = () => {
+const LogListScreen = ({ navigation }) => {
   const { user } = useAuth();
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -56,6 +57,10 @@ const LogListScreen = () => {
     </View>
   );
 
+  const handleCreateLog = () => {
+    navigation.navigate('CreateLog');
+  };
+
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
@@ -94,6 +99,14 @@ const LogListScreen = () => {
           style={styles.list}
         />
       )}
+      
+      {/* Floating Action Button */}
+      <TouchableOpacity 
+        style={styles.fab} 
+        onPress={handleCreateLog}
+      >
+        <Text style={styles.fabText}>+</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -142,6 +155,27 @@ const styles = StyleSheet.create({
     color: '#666',
     fontSize: 16,
     marginTop: 32,
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#007AFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  fabText: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: 'bold',
   },
 });
 
