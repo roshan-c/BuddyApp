@@ -103,6 +103,10 @@ const LogListScreen = ({ navigation }) => {
     navigation.navigate('CreateLog');
   };
 
+  const handleFriends = () => {
+    navigation.navigate('Friends');
+  };
+
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
@@ -130,7 +134,16 @@ const LogListScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Log Entries</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>Log Entries</Text>
+        <TouchableOpacity 
+          style={styles.friendsButton} 
+          onPress={handleFriends}
+        >
+          <Text style={styles.friendsButtonText}>Friends</Text>
+        </TouchableOpacity>
+      </View>
+      
       {logs.length === 0 ? (
         <Text style={styles.emptyText}>No log entries yet</Text>
       ) : (
@@ -164,6 +177,23 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  friendsButton: {
+    backgroundColor: '#34C759',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  friendsButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
   list: {
     flex: 1,

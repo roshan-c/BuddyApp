@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import MainScreen from '../screens/Main/MainScreen';
 import LogListScreen from '../screens/Main/LogListScreen';
 import CreateLogScreen from '../screens/Main/CreateLogScreen';
+import FriendsScreen from '../screens/Main/FriendsScreen';
 
 const Stack = createStackNavigator();
 
@@ -23,6 +24,11 @@ const AppNavigator = () => {
         name="CreateLog" 
         component={CreateLogScreen}
         options={{ title: 'Create Log Entry' }}
+      />
+      <Stack.Screen 
+        name="Friends" 
+        component={FriendsScreen}
+        options={{ title: 'Friends' }}
       />
     </Stack.Navigator>
   );
