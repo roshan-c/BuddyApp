@@ -59,8 +59,7 @@ const LogListScreen = ({ navigation }) => {
           { 
             event: 'INSERT', 
             schema: 'public', 
-            table: 'logs',
-            filter: `user_id=eq.${user.id}`
+            table: 'logs'
           }, 
           (payload) => {
             console.log('Realtime INSERT event received:', payload);
