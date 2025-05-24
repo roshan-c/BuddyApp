@@ -22,6 +22,7 @@ export const createLogEntry = async (userId, logData) => {
     return { data, error: null };
   } catch (error) {
     console.error('Error creating log entry:', error);
+    console.error('Error details:', JSON.stringify(error, null, 2));
     return { data: null, error };
   }
 };
@@ -43,6 +44,7 @@ export const getLogEntries = async (userId) => {
     return { data, error: null };
   } catch (error) {
     console.error('Error fetching log entries:', error);
+    console.error('Error details:', JSON.stringify(error, null, 2));
     return { data: null, error };
   }
 }; 
