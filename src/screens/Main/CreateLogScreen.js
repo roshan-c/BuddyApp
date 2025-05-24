@@ -11,11 +11,13 @@ import {
 } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { createLogEntry } from '../../api/logs';
+import { getCurrentPosition, requestLocationPermission } from '../../utils/location';
 
 const CreateLogScreen = ({ navigation }) => {
   const { user } = useAuth();
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
+  const [locationLoading, setLocationLoading] = useState(false);
 
   const handleSubmit = async () => {
     if (!notes.trim()) {
@@ -32,9 +34,42 @@ const CreateLogScreen = ({ navigation }) => {
       setLoading(true);
       
       console.log('Creating log entry for user:', user.id);
-      const { data, error } = await createLogEntry(user.id, { 
+      
+      // Prepare log data
+      const logData = { 
         notes: notes.trim() 
-      });
+      };
+      
+      // Try to get location data
+      setLocationLoading(true);
+      try {
+        // Request permission first
+        const hasPermission = await requestLocationPermission();
+        
+        if (hasPermission) {
+          console.log('Location permission granted, getting current position...');
+          const position = await getCurrentPosition();
+          
+          if (position) {
+            logData.location = {
+              latitude: position.latitude,
+              longitude: position.longitude
+            };
+            console.log('Location captured:', logData.location);
+          } else {
+            console.log('Could not get current position');
+          }
+        } else {
+          console.log('Location permission denied');
+        }
+      } catch (locationError) {
+        console.warn('Error getting location:', locationError);
+        // Continue without location - it's optional
+      } finally {
+        setLocationLoading(false);
+      }
+      
+      const { data, error } = await createLogEntry(user.id, logData);
       
       if (error) {
         throw error;
@@ -52,6 +87,7 @@ const CreateLogScreen = ({ navigation }) => {
       Alert.alert('Error', err.message || 'Failed to create log entry');
     } finally {
       setLoading(false);
+      setLocationLoading(false);
     }
   };
 
@@ -75,6 +111,13 @@ const CreateLogScreen = ({ navigation }) => {
           textAlignVertical="top"
           editable={!loading}
         />
+        
+        {locationLoading && (
+          <View style={styles.locationStatus}>
+            <ActivityIndicator size="small" color="#007AFF" />
+            <Text style={styles.locationText}>Getting location...</Text>
+          </View>
+        )}
         
         <View style={styles.buttonContainer}>
           <TouchableOpacity 
@@ -130,6 +173,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#f9f9f9',
     minHeight: 100,
+  },
+  locationStatus: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+    paddingVertical: 8,
+  },
+  locationText: {
+    marginLeft: 8,
+    fontSize: 14,
+    color: '#666',
   },
   buttonContainer: {
     flexDirection: 'row',

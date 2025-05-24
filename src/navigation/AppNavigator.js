@@ -4,6 +4,7 @@ import MainScreen from '../screens/Main/MainScreen';
 import LogListScreen from '../screens/Main/LogListScreen';
 import CreateLogScreen from '../screens/Main/CreateLogScreen';
 import FriendsScreen from '../screens/Main/FriendsScreen';
+import MapScreen from '../screens/Main/MapScreen';
 
 const Stack = createStackNavigator();
 
@@ -29,6 +30,11 @@ const AppNavigator = () => {
         name="Friends" 
         component={FriendsScreen}
         options={{ title: 'Friends' }}
+      />
+      <Stack.Screen 
+        name="Map" 
+        component={MapScreen}
+        options={{ title: 'Map' }}
       />
     </Stack.Navigator>
   );

@@ -12,6 +12,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
 import { getLogEntries } from '../../api/logs';
 import supabase from '../../api/supabase';
+// import LocationTest from '../../components/LocationTest'; // Testing complete - removed
 
 const LogListScreen = ({ navigation }) => {
   const { user } = useAuth();
@@ -106,6 +107,10 @@ const LogListScreen = ({ navigation }) => {
     navigation.navigate('Friends');
   };
 
+  const handleMap = () => {
+    navigation.navigate('Map');
+  };
+
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
@@ -135,12 +140,20 @@ const LogListScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Log Entries</Text>
-        <TouchableOpacity 
-          style={styles.friendsButton} 
-          onPress={handleFriends}
-        >
-          <Text style={styles.friendsButtonText}>Friends</Text>
-        </TouchableOpacity>
+        <View style={styles.headerButtons}>
+          <TouchableOpacity 
+            style={styles.mapButton} 
+            onPress={handleMap}
+          >
+            <Text style={styles.mapButtonText}>Map</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.friendsButton} 
+            onPress={handleFriends}
+          >
+            <Text style={styles.friendsButtonText}>Friends</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       
       {logs.length === 0 ? (
@@ -182,6 +195,21 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 16,
+  },
+  headerButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  mapButton: {
+    backgroundColor: '#FF9500',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  mapButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
   friendsButton: {
     backgroundColor: '#34C759',
